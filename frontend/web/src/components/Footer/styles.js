@@ -6,12 +6,12 @@ export const Container = styled.div`
     background: #072227;
     border-top: 5px solid #4FBDBA;
 
-    position: fixed;
     bottom: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
+    position: fixed;
 
     span{
         color: #f2f2f2;

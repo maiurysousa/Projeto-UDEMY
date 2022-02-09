@@ -43,6 +43,13 @@ a {
     }
 }
 
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 #notification {
     img {
         width: 25px;
@@ -57,6 +64,7 @@ a {
         position: relative;
         top: -20px;
         right: 10px;
+        font-weight: bold;
     }
 
     &:hover {
