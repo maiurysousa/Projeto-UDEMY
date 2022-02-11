@@ -1,66 +1,66 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import * as S from './styles';
 
 import api from '../../services/api';
+import isConnected from '../../utils/isConnected';
 
 //componentes
 import Header from '../../components/Header/index';
 import Footer from '../../components/Footer/index';
 import FilterCard from '../../components/FilterCard/index'
 import TaskCard from '../../components/TaskCard/index';
+import { tr } from 'date-fns/locale';
 
 
 function Home() {
   const [filterActived, setFilterActived] = useState('all');
   const [tasks, setTasks] = useState([]);
-  const [lateCount, setLateCount] = useState();
+  const [redirect, setRedirect] = useState(false);
 
-  async function loadTasks(){
-    await api.get(`/task/filter/${filterActived}/11:11:11:11:11:11`)
-    .then(response => {
-      setTasks(response.data)
-    })
+  async function loadTasks() {
+    await api.get(`/task/filter/${filterActived}/${isConnected}`)
+      .then(response => {
+        setTasks(response.data)
+      })
   }
 
-  async function lateVerify(){
-    await api.get(`/task/filter/late/11:11:11:11:11:11`)
-    .then(response => {
-      setLateCount(response.data.length)
-    })
-  }
 
-  function Notification(){
+  function Notification() {
     setFilterActived('late');
   }
 
   useEffect(() => {
     loadTasks();
-    lateVerify();
-  }, [filterActived])
+
+    if(!isConnected)
+    setRedirect(true)
+;  }, [filterActived, loadTasks])
 
   return (
     <S.Container>
-      <Header lateCount={lateCount} clickNotification={Notification}/>
+      {redirect && <Navigate to='/qrcode' />} 
+      <Header clickNotification={Notification} />
 
       <S.FilterArea>
-        <button type="button"       onClick={() => setFilterActived ("all")}>
-        <FilterCard title="Todos"   actived={filterActived == 'all'}/>
+        <button type="button" onClick={() => setFilterActived("all")}>
+          <FilterCard title="Todos" actived={filterActived == 'all'} />
         </button>
 
-        <button type="button"       onClick={() => setFilterActived ("today")}>
-        <FilterCard title="Hoje"    actived={filterActived == 'today'} />
+        <button type="button" onClick={() => setFilterActived("today")}>
+          <FilterCard title="Hoje" actived={filterActived == 'today'} />
         </button>
 
-        <button type="button"       onClick={() => setFilterActived ("week")}>
-        <FilterCard title="Semana"  actived={filterActived == 'week'} />
+        <button type="button" onClick={() => setFilterActived("week")}>
+          <FilterCard title="Semana" actived={filterActived == 'week'} />
         </button>
 
-        <button type="button"       onClick={() => setFilterActived ("month")}>
-        <FilterCard title="Mês"     actived={filterActived == 'month'} />
+        <button type="button" onClick={() => setFilterActived("month")}>
+          <FilterCard title="Mês" actived={filterActived == 'month'} />
         </button>
 
-        <button type="button"       onClick={() => setFilterActived ("year")}>
-        <FilterCard title="Ano"     actived={filterActived == 'year'} />
+        <button type="button" onClick={() => setFilterActived("year")}>
+          <FilterCard title="Ano" actived={filterActived == 'year'} />
         </button>
       </S.FilterArea>
 
@@ -70,12 +70,13 @@ function Home() {
 
       <S.Content>
         {
-          tasks.map( t => (
-          <TaskCard type={t.type} title={t.title} when={t.when}/>
-
+          tasks.map(t => (
+            <Link to={`/task/${t._id}`}>
+              <TaskCard type={t.type} title={t.title} when={t.when} done={t.done}/>
+            </Link>
           ))
         }
-   
+
       </S.Content>
 
       <Footer />

@@ -78,5 +78,10 @@ button {
     color: #f2f2f2;
 }
     
+button {
+    font-size: 16px;
+    color: #f2f2f2;
+    
+}
 
 `
